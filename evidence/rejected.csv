@@ -1,0 +1,10 @@
+order_id,customer_id,drink_id,store_id,qty,ordered_at,status,reason
+201,5,3,2,0,2026-03-04T09:00:00+05:30,placed,quantity must be greater than zero: 0
+202,5,3,2,-2,2026-03-04T09:00:00+05:30,placed,quantity must be greater than zero: -2
+203,5,3,2,two,2026-03-04T09:00:00+05:30,placed,quantity is not a valid integer: two
+204,5,3,2,1,not-a-date,placed,unparseable timestamp: not-a-date
+205,5,3,2,1,2026-03-04T09:00:00+05:30,exploded,invalid status enum value: exploded
+206,5,99999,2,1,2026-03-04T09:00:00+05:30,placed,no drink exists for drink_id: 99999
+207,,3,2,1,2026-03-04T09:00:00+05:30,placed,customer_id cannot be empty
+208,5,3,2,1,2026-03-04T09:00:00+05:30,,missing field: status
+209,5,3,2,1,2026-03-04T09:00:00+05:30,placed,row has too many fields
