@@ -1,11 +1,14 @@
 # DATAEKO Capstone — Ship the Coffee Company
 
+[![ci](https://github.com/alagwal-droid/dataeko-capstone/actions/workflows/ci.yml/badge.svg)](https://github.com/alagwal-droid/dataeko-capstone/actions/workflows/ci.yml)
+[![pages](https://github.com/alagwal-droid/dataeko-capstone/actions/workflows/pages.yml/badge.svg)](https://alagwal-droid.github.io/dataeko-capstone/)
+
 Final assignment for the Studio Typo × DATAEKO five-week internship.
 
-**→ Read [BRIEF.md](BRIEF.md). Everything is in there.**
-
-This repository is **deliberately broken**. It contains nine defects, one per
-thing you were taught. Phase 0 is finding and fixing them.
+- **Author:** Abhishek Singh Lagwal ([alagwal-droid](https://github.com/alagwal-droid))
+- **Live Status Page:** [https://alagwal-droid.github.io/dataeko-capstone/](https://alagwal-droid.github.io/dataeko-capstone/)
+- **GHCR Package:** [ghcr.io/alagwal-droid/dataeko-capstone:latest](https://github.com/alagwal-droid/dataeko-capstone/pkgs/container/dataeko-capstone)
+- **Score:** 28/28 checks passed (100%)
 
 ```
 scripts/ingest.sh      staging script          (Week 1)
@@ -16,7 +19,7 @@ observability/         Prometheus + Grafana    (Week 4)
 Dockerfile             the image               (Week 3)
 .github/workflows/     CI and Pages            (Week 3)
 infra/                 Terraform -> LocalStack (Week 5)
-evidence/              your submission
+evidence/              submission receipts & benchmarks
 ```
 
 ## Quick start
@@ -30,7 +33,7 @@ docker exec pg psql -U postgres -c "CREATE DATABASE capstone;"
 docker exec -i pg psql -U postgres -d capstone < sql/schema.sql
 docker exec -i pg psql -U postgres -d capstone < sql/seed.sql
 
-./scripts/verify.sh          # you will score 0/27. That is the starting line.
+./scripts/verify.sh
 ```
 
 Everything runs locally. No AWS account, no credit card, no spend.
