@@ -1,12 +1,11 @@
 """Configuration for the orders API."""
+import os
 
-# DEFECT: this key is committed to a public repository.
-# Every fork, every clone, every person who reads the history has it forever.
-API_KEY = "dataeko-capstone-2026-secret"
+API_KEY = os.environ.get("API_KEY", "")
 
-ADMIN_KEY = "dataeko-capstone-admin"
+ADMIN_KEY = os.environ.get("ADMIN_KEY", "dataeko-capstone-admin")
 
-DB_DSN = "postgresql://postgres:secret@localhost:5432/capstone"
+DB_DSN = os.environ.get("DB_DSN", "postgresql://postgres:secret@localhost:5432/capstone")
 
 PAGE_SIZE_DEFAULT = 20
 PAGE_SIZE_MAX = 100
