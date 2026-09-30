@@ -8,3 +8,4 @@ terraform.tfstate.backup
 data/staging/
 evidence/rejected.csv.tmp
 .DS_Store
+*.zip
