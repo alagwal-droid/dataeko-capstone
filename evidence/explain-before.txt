@@ -1,0 +1,16 @@
+Query: EXPLAIN ANALYZE SELECT * FROM orders WHERE customer_id = 4242;
+
+                                                    QUERY PLAN                                                     
+-------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.00..6657.33 rows=20 width=36) (actual time=0.335..9.280 rows=20 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   ->  Parallel Seq Scan on orders  (cost=0.00..5655.33 rows=8 width=36) (actual time=0.435..6.287 rows=7 loops=3)
+         Filter: (customer_id = 4242)
+         Rows Removed by Filter: 133327
+ Planning Time: 0.275 ms
+ Execution Time: 9.313 ms
+(8 rows)
+
+Index: None (Baseline query execution prior to index creation on orders.customer_id).
+Why the planner changed its mind: Without an index on customer_id, PostgreSQL must perform a Parallel Seq Scan to inspect all 400,000 rows across every disk page. The cost estimation of 6657.33 reflects the heavy sequential disk I/O required to evaluate the filter condition against the entire table.
