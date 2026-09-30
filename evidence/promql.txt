@@ -1,0 +1,55 @@
+DATAEKO Capstone — Phase 4 Observability Metrics & Analysis
+
+================================================================================
+4.1 Metric Types: Why a Counter is Wrong for In-Flight Requests
+================================================================================
+A Counter is strictly monotonically increasing and cannot decrease when concurrent operations finish; in-flight requests represent an instantaneous system level that must increase on entry and decrease on exit, which requires a Gauge.
+
+================================================================================
+4.3 PromQL Queries and Output
+================================================================================
+
+1. Request rate over 5 minutes, by endpoint:
+Query:
+sum by (endpoint) (rate(capstone_requests_total[5m]))
+
+Output:
+{endpoint="/health"} 1.423
+{endpoint="/orders"} 4.891
+{endpoint="/metrics"} 0.200
+{endpoint="/stats"} 0.100
+
+--------------------------------------------------------------------------------
+
+2. Error rate as a percentage of all requests:
+Query:
+(sum(rate(capstone_requests_total{status=~"4..|5.."}[5m])) / sum(rate(capstone_requests_total[5m]))) * 100
+
+Output:
+{} 6.8493150684931505
+
+--------------------------------------------------------------------------------
+
+3. 95th percentile latency (P95):
+Query:
+histogram_quantile(0.95, sum by (le) (rate(capstone_request_seconds_bucket[5m])))
+
+Output:
+{} 0.04829104829104829
+
+================================================================================
+4.5 Process Termination Analysis: rate() and Failure Detection
+================================================================================
+When the API process is killed or abruptly stops serving:
+1. Behavior of rate():
+The rate() function calculates the per-second average rate of increase of a time series over a given lookback window. When a process terminates, Prometheus misses scrapes. Once the scrape timeout exceeds the lookback threshold, the metric series becomes stale and disappears from evaluation. rate() returns empty (no data or NaN) rather than zero or an error value.
+
+2. Why an alert on "error rate" would not fire:
+An error rate alert typically evaluates the ratio of HTTP 4xx/5xx errors to total HTTP requests:
+(sum(rate(capstone_requests_total{status=~"5.."}[5m])) / sum(rate(capstone_requests_total[5m]))) > 0.05
+When the entire API stops responding, incoming requests drop to zero. The denominator (total requests) becomes 0 (or no data), resulting in a division by zero or NaN. Because no requests are being processed, no error status codes are incremented, so the error rate condition is never satisfied and the alert fails to fire.
+
+3. The Required Fix:
+Target availability must be monitored directly using the synthetic scrape health metric:
+up{job="capstone-api"} == 0
+This rule fires after 1 minute of consecutive scrape failures regardless of application-level counters.
