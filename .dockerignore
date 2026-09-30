@@ -1,0 +1,12 @@
+.git
+.gitignore
+.terraform/
+infra/.terraform/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+evidence/
+data/staging/
