@@ -16,8 +16,15 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-import psycopg
-import requests
+try:
+    import psycopg
+except ImportError:
+    psycopg = None
+
+try:
+    import requests
+except ImportError:
+    requests = None
 
 try:
     from api.config import DB_DSN

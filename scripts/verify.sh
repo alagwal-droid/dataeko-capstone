@@ -5,6 +5,10 @@
 # Writes evidence/RECEIPT.json. Commit that file.
 set -u
 
+if [ -f .venv/bin/activate ] && [ -z "${VIRTUAL_ENV:-}" ]; then
+  source .venv/bin/activate
+fi
+
 LIVE=0; [ "${1:-}" = "--live" ] && LIVE=1
 PASS=0; FAIL=0; SKIP=0
 RESULTS=""
