@@ -4,9 +4,9 @@ FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
-COPY api/requirements.txt api/requirements.txt
-RUN pip install --no-cache-dir -r api/requirements.txt
+# DEFECT: source is copied BEFORE dependencies are installed
 COPY . .
+RUN pip install --no-cache-dir -r api/requirements.txt
 
 # Stage 2: Runtime image
 FROM python:3.13-slim AS runner
