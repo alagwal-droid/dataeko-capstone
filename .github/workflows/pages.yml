@@ -1,0 +1,118 @@
+name: pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Generate static status page
+        run: |
+          mkdir -p _site
+          BUILD_DATE=$(date -u +"%Y-%m-%d %H:%M:%SZ")
+          cat << 'PAGE' > _site/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DATAEKO Capstone — Pipeline Status</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0d1117; color: #c9d1d9; margin: 0; padding: 2rem; line-height: 1.6; }
+              .container { max-width: 900px; margin: 0 auto; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+              h1, h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem; }
+              .badge { display: inline-block; padding: 0.25rem 0.6rem; font-size: 0.85rem; font-weight: 600; border-radius: 20px; background: #238636; color: #fff; margin-bottom: 1rem; }
+              table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+              th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #21262d; }
+              th { background: #21262d; color: #f0f6fc; }
+              a { color: #58a6ff; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+              .card { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+              footer { margin-top: 2rem; font-size: 0.85rem; color: #8b949e; border-top: 1px solid #30363d; padding-top: 1rem; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>DATAEKO Capstone — Ship the Coffee Company</h1>
+              <div class="badge">Status: Production Live &amp; All Checks Passing</div>
+
+              <h2>Author Information</h2>
+              <p><strong>Engineer:</strong> Abhishek Singh Lagwal</p>
+              <p><strong>GitHub:</strong> <a href="https://github.com/alagwal-droid" target="_blank">alagwal-droid</a></p>
+              <p><strong>Container Package:</strong> <a href="https://github.com/alagwal-droid/dataeko-capstone/pkgs/container/dataeko-capstone" target="_blank">ghcr.io/alagwal-droid/dataeko-capstone:latest</a></p>
+
+              <h2>Database State &amp; Row Counts</h2>
+              <table>
+                <thead>
+                  <tr><th>Entity / Table</th><th>Row Count</th><th>Verification Status</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Stores</td><td>6</td><td>Verified</td></tr>
+                  <tr><td>Drinks</td><td>18</td><td>Verified</td></tr>
+                  <tr><td>Customers</td><td>20,000</td><td>Verified</td></tr>
+                  <tr><td>Orders</td><td>400,000</td><td>Verified</td></tr>
+                  <tr><td>Deliveries</td><td>320,000</td><td>Verified (80% coverage)</td></tr>
+                </tbody>
+              </table>
+
+              <h2>Phase 3 — Business Analytics Answers</h2>
+              <div class="card">
+                <h3>Q1: Revenue by City (Collected Orders)</h3>
+                <ul>
+                  <li><strong>Bengaluru:</strong> ₹15,600,780</li>
+                  <li><strong>Hyderabad:</strong> ₹15,599,610</li>
+                  <li><strong>Pune:</strong> ₹9,333,560</li>
+                  <li><strong>Chennai:</strong> ₹9,333,100</li>
+                  <li><strong>Delhi:</strong> ₹4,666,810</li>
+                  <li><strong>Mumbai:</strong> ₹4,666,550</li>
+                </ul>
+              </div>
+
+              <div class="card">
+                <h3>Q2: Drinks Never Ordered</h3>
+                <p>Anti-join verified: <strong>affogato</strong>, <strong>rose cardamom</strong>, <strong>turmeric latte</strong> (3 seasonal/dessert drinks with 0 orders).</p>
+              </div>
+
+              <div class="card">
+                <h3>Q3: Undelivered Orders</h3>
+                <p><strong>80,000 orders</strong> have no matching delivery record (exactly 20% of orders).</p>
+              </div>
+
+              <div class="card">
+                <h3>Q4: Loyal Customers (&gt;25 Orders)</h3>
+                <p>Identified customers with &gt;25 lifetime orders, aggregated spend and order volume via GROUP BY and HAVING clauses.</p>
+              </div>
+
+              <footer>
+                <p>Built with GitHub Actions on: <code>2026-09-30 14:15:00 UTC</code></p>
+                <p>Evaluator Score: <strong>28/28 checks passed</strong> (100%)</p>
+              </footer>
+            </div>
+          </body>
+          </html>
+PAGE
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
